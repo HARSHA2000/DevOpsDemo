@@ -1,0 +1,20 @@
+1. Login to azure from CLI:
+    a. Download and install azure CLI 
+        from loaction: 'https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-windows?tabs=azure-cli#install-or-update'
+    b. Open cmd.
+    c. login cmd: `az login`
+
+2. Create a new resource group from azure cli:
+cmd: `az group create --name <resource group name> --location "<access location>"`
+
+3. Create a new storage account inside the resource group from azure cli:
+cmd: `az storage account create --name <storage account name> --resource-group <resource group name> --location "<access loaction>"` 
+
+3. List all resource groups.
+cmd: `az group list`
+
+4. List all storage accounts.
+cmd: `az storage account list`
+
+5. List all storage accounts under one resource group.
+cmd: `az storage account list --resource-group <resource group name>`
