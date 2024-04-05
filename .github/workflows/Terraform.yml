@@ -10,49 +10,25 @@ on:
       - 'production'
 
 jobs:
-  terraform:
-    name: 'Terraform'
+  prodTerraform:
+    name: terraform in production
+    runs-on: ubuntu-latest
     env:
       ARM_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID }}
       ARM_CLIENT_SECRET: ${{ secrets.AZURE_AD_CLIENT_SECRET }}
       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       ARM_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
-    runs-on: ubuntu-latest
-
-    # environment: ${{github.event.pull_request.base.ref }}
-    # if: github.event.pull_request.merged && github.event.pull_request.base.ref == 'production' 
+    environment: production
+    
+    if: github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'refs/heads/production' && github.event.action == 'closed'
     
     defaults:
       run:
         shell: bash
-
+    
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
-
-    # - name: Set environment based on branch
-    #   run: |
-    #     if [ "${{github.event.pull_request.base.ref == 'production'}}"]; then
-    #       echo "ENVIRONMENT=production" >> $GITHUB_ENV
-    #     elif [ "${{ github.ref }}" = "refs/heads/test" ]; then
-    #       echo "ENVIRONMENT=test" >> $GITHUB_ENV
-    #     elif [ "${{ github.ref }}" = "refs/heads/production" ]; then
-    #       echo "ENVIRONMENT=production" >> $GITHUB_ENV
-    #     else
-    #       echo "ENVIRONMENT=development" >> $GITHUB_ENV
-    #     fi
-
-    - name: Determine environment
-      run: |
-        if ["${{ github.event_name}}" == "pull_request" ]; then
-          if [ "${{ github.event.pull_request.base.ref }}" == "production" ]; then
-            echo "::set-output name=environment::production"
-          else
-            echo "::set-output name=environment::${{ github.event.pull_request.base.ref }}"
-          fi
-        else
-          echo "::set-output name=environment::test"
-        fi
+      uses: actions/checkout@v2 
 
     - name: 'Terraform Format'
       uses: hashicorp/terraform-github-actions@master
@@ -83,9 +59,120 @@ jobs:
         tf_actions_working_dir: "./terraform"
 
     - name: Terraform Apply
-      if: github.ref == 'refs/heads/test' || github.ref == 'refs/heads/production'
       uses: hashicorp/terraform-github-actions@master
       with:
         tf_actions_version: 1.7.5
         tf_actions_subcommand: 'apply'
         tf_actions_working_dir: "./terraform"
+  
+  testTerraform:
+    name: terraform in test
+    runs-on: ubuntu-latest
+    env:
+      ARM_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.AZURE_AD_CLIENT_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
+    environment: test
+    
+    if: github.event_name == 'push' && github.ref == 'refs/heads/test'
+    
+    defaults:
+      run:
+        shell: bash
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2 
+
+    - name: 'Terraform Format'
+      uses: hashicorp/terraform-github-actions@master
+      with:
+        tf_actions_version: 1.7.5
+        tf_actions_subcommand: 'fmt'
+        tf_actions_working_dir: "./terraform"
+        
+    - name: 'Terraform Init'
+      uses: hashicorp/terraform-github-actions@master
+      with:
+        tf_actions_version: 1.7.5
+        tf_actions_subcommand: 'init'
+        tf_actions_working_dir: "./terraform"
+
+    - name: 'Terraform Validate'
+      uses: hashicorp/terraform-github-actions@master
+      with:
+        tf_actions_version: 1.7.5
+        tf_actions_subcommand: 'validate'
+        tf_actions_working_dir: "./terraform"
+        
+    - name: 'Terraform Plan'
+      uses: hashicorp/terraform-github-actions@master
+      with:
+        tf_actions_version: 1.7.5
+        tf_actions_subcommand: 'plan'
+        tf_actions_working_dir: "./terraform"
+
+    - name: Terraform Apply
+      uses: hashicorp/terraform-github-actions@master
+      with:
+        tf_actions_version: 1.7.5
+        tf_actions_subcommand: 'apply'
+        tf_actions_working_dir: "./terraform"
+
+
+  # terraform:
+  #   name: 'Terraform'
+  #   env:
+  #     ARM_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID }}
+  #     ARM_CLIENT_SECRET: ${{ secrets.AZURE_AD_CLIENT_SECRET }}
+  #     ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  #     ARM_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
+  #   runs-on: ubuntu-latest
+    # environment: ${{github.ref}}
+    # environment: ${{github.event.pull_request.base.ref }}
+    # if: github.event.pull_request.merged && github.event.pull_request.base.ref == 'production' 
+    
+    # defaults:
+    #   run:
+    #     shell: bash
+
+    # steps:
+    # - name: Checkout
+    #   uses: actions/checkout@v2 
+
+    # - name: 'Terraform Format'
+    #   uses: hashicorp/terraform-github-actions@master
+    #   with:
+    #     tf_actions_version: 1.7.5
+    #     tf_actions_subcommand: 'fmt'
+    #     tf_actions_working_dir: "./terraform"
+        
+    # - name: 'Terraform Init'
+    #   uses: hashicorp/terraform-github-actions@master
+    #   with:
+    #     tf_actions_version: 1.7.5
+    #     tf_actions_subcommand: 'init'
+    #     tf_actions_working_dir: "./terraform"
+
+    # - name: 'Terraform Validate'
+    #   uses: hashicorp/terraform-github-actions@master
+    #   with:
+    #     tf_actions_version: 1.7.5
+    #     tf_actions_subcommand: 'validate'
+    #     tf_actions_working_dir: "./terraform"
+        
+    # - name: 'Terraform Plan'
+    #   uses: hashicorp/terraform-github-actions@master
+    #   with:
+    #     tf_actions_version: 1.7.5
+    #     tf_actions_subcommand: 'plan'
+    #     tf_actions_working_dir: "./terraform"
+
+    # - name: Terraform Apply
+    #   if: github.ref == 'refs/heads/test' || github.ref == 'refs/heads/production'
+    #   uses: hashicorp/terraform-github-actions@master
+    #   with:
+    #     tf_actions_version: 1.7.5
+    #     tf_actions_subcommand: 'apply'
+    #     tf_actions_working_dir: "./terraform"
