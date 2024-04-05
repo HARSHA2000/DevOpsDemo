@@ -3,11 +3,11 @@ name: 'Terraform'
 on:
   push:
     branches:
-      - '*'
+      - 'test'
   pull_request:
     types: [closed]
     branches:
-      - '*'
+      - 'production'
 
 jobs:
   terraform:
