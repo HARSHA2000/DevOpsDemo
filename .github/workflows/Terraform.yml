@@ -19,7 +19,7 @@ jobs:
       ARM_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
     runs-on: ubuntu-latest
 
-    environment: ${{github.event.pull_request.base.ref }}
+    environment: ${{github.event.pull_request.base.ref }} || ${{github.ref}}
     # if: github.event.pull_request.merged && github.event.pull_request.base.ref == 'production' 
     
     defaults:
