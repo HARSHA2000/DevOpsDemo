@@ -19,6 +19,7 @@ jobs:
       ARM_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
     runs-on: ubuntu-latest
 
+    # environment: ${{github.event.pull_request.base.ref }}
     # if: github.event.pull_request.merged && github.event.pull_request.base.ref == 'production' 
     
     defaults:
@@ -29,16 +30,28 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
-    - name: Set environment based on branch
+    # - name: Set environment based on branch
+    #   run: |
+    #     if [ "${{github.event.pull_request.base.ref == 'production'}}"]; then
+    #       echo "ENVIRONMENT=production" >> $GITHUB_ENV
+    #     elif [ "${{ github.ref }}" = "refs/heads/test" ]; then
+    #       echo "ENVIRONMENT=test" >> $GITHUB_ENV
+    #     elif [ "${{ github.ref }}" = "refs/heads/production" ]; then
+    #       echo "ENVIRONMENT=production" >> $GITHUB_ENV
+    #     else
+    #       echo "ENVIRONMENT=development" >> $GITHUB_ENV
+    #     fi
+
+    - name: Determine environment
       run: |
-        if [ "${{github.event.pull_request.base.ref == 'production'}}"]; then
-          echo "ENVIRONMENT=production" >> $GITHUB_ENV
-        elif [ "${{ github.ref }}" = "refs/heads/test" ]; then
-          echo "ENVIRONMENT=test" >> $GITHUB_ENV
-        elif [ "${{ github.ref }}" = "refs/heads/production" ]; then
-          echo "ENVIRONMENT=production" >> $GITHUB_ENV
+        if [ "${{ github.event_name }}" == "pull_request" ]; then
+          if [ "${{ github.event.pull_request.base.ref }}" == "production" ]; then
+            echo "::set-output name=environment::production"
+          else
+            echo "::set-output name=environment::${{ github.event.pull_request.base.ref }}"
+          fi
         else
-          echo "ENVIRONMENT=development" >> $GITHUB_ENV
+          echo "::set-output name=environment::test"
         fi
 
     - name: 'Terraform Format'
