@@ -19,7 +19,7 @@ jobs:
       ARM_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
     runs-on: ubuntu-latest
 
-    if: github.event.pull_request.merged && github.event.pull_request.base.ref == 'production'
+    # if: github.event.pull_request.merged && github.event.pull_request.base.ref == 'production' 
     
     defaults:
       run:
@@ -31,7 +31,9 @@ jobs:
 
     - name: Set environment based on branch
       run: |
-        if [ "${{ github.ref }}" = "refs/heads/test" ]; then
+        if [ "${{github.event.pull_request.base.ref = 'production'}}"]
+          echo "environment=production" >> $GITHUB_ENV
+        elif [ "${{ github.ref }}" = "refs/heads/test" ]; then
           echo "environment=test" >> $GITHUB_ENV
         elif [ "${{ github.ref }}" = "refs/heads/production" ]; then
           echo "environment=production" >> $GITHUB_ENV
