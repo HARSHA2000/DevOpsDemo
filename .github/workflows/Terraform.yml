@@ -16,7 +16,15 @@ jobs:
       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       ARM_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
     runs-on: ubuntu-latest
-    environment: test
+
+    run : |
+      if [ "${{ github.ref }}" = "refs/heads/test" ]; then
+        echo "environment=test" >> $GITHUB_ENV
+      elif [ "${{ github.ref }}" = "refs/heads/production" ]; then
+        echo "environment=production" >> $GITHUB_ENV
+      else
+        echo "environment=development" >> $GITHUB_ENV
+      fi
 
     defaults:
       run:
