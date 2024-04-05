@@ -32,11 +32,11 @@ jobs:
     - name: Set environment based on branch
       run: |
         if [ "${{ github.ref }}" = "refs/heads/test" ]; then
-          echo "ENVIRONMENT=test" >> $GITHUB_ENV
+          echo "environment=test" >> $GITHUB_ENV
         elif [ "${{ github.ref }}" = "refs/heads/production" ]; then
-          echo "ENVIRONMENT=production" >> $GITHUB_ENV
+          echo "environment=production" >> $GITHUB_ENV
         else
-          echo "ENVIRONMENT=development" >> $GITHUB_ENV
+          echo "environment=development" >> $GITHUB_ENV
         fi
 
     - name: 'Terraform Format'
