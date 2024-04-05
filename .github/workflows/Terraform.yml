@@ -43,17 +43,17 @@ jobs:
     #     fi
 
     - name: Determine environment
-        id: determine_environment
-        run: |
-          if [ "${{ github.event_name }}" == "pull_request" ]; then
-            if [ "${{ github.event.pull_request.base.ref }}" == "production" ]; then
-              echo "::set-output name=environment::production"
-            else
-              echo "::set-output name=environment::${{ github.event.pull_request.base.ref }}"
-            fi
+      run: |
+        if [ "${{ github.event_name }}" == "pull_request" ]; then
+          if [ "${{ github.event.pull_request.base.ref }}" == "production" ]; then
+            echo "::set-output name=environment::production"
           else
-            echo "::set-output name=environment::test"
+            echo "::set-output name=environment::${{ github.event.pull_request.base.ref }}"
           fi
+        else
+          echo "::set-output name=environment::test"
+        fi
+
     - name: 'Terraform Format'
       uses: hashicorp/terraform-github-actions@master
       with:
