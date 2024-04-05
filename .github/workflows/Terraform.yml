@@ -44,7 +44,7 @@ jobs:
 
     - name: Determine environment
       run: |
-        if [ "${{ github.event_name }}" == "pull_request" ]; then
+        if ["${{ github.event_name}}" == "pull_request" ]; then
           if [ "${{ github.event.pull_request.base.ref }}" == "production" ]; then
             echo "::set-output name=environment::production"
           else
