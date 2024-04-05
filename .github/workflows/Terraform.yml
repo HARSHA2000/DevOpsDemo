@@ -13,13 +13,15 @@ jobs:
   prodTerraform:
     name: terraform in production
     runs-on: ubuntu-latest
-    if: github.event.pull_request.base.ref == 'production'
     env:
       ARM_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID }}
       ARM_CLIENT_SECRET: ${{ secrets.AZURE_AD_CLIENT_SECRET }}
       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       ARM_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
     environment: production
+    
+    if: github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'refs/heads/production' && github.event.action == 'closed'
+    
     defaults:
       run:
         shell: bash
@@ -57,7 +59,6 @@ jobs:
         tf_actions_working_dir: "./terraform"
 
     - name: Terraform Apply
-      if: github.ref == 'refs/heads/test' || github.ref == 'refs/heads/production'
       uses: hashicorp/terraform-github-actions@master
       with:
         tf_actions_version: 1.7.5
@@ -67,13 +68,15 @@ jobs:
   testTerraform:
     name: terraform in test
     runs-on: ubuntu-latest
-    if: github.event.repository.default_branch == 'test'
     env:
       ARM_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID }}
       ARM_CLIENT_SECRET: ${{ secrets.AZURE_AD_CLIENT_SECRET }}
       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       ARM_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
     environment: test
+    
+    if: github.event_name == 'push' && github.ref == 'refs/heads/test'
+    
     defaults:
       run:
         shell: bash
