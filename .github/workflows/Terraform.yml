@@ -20,7 +20,7 @@ jobs:
       ARM_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
     environment: production
     
-    if: github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'production' && github.event.action == 'closed'
+    if: github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'production' && github.event.action =='closed'
     
     defaults:
       run:
