@@ -65,7 +65,7 @@ jobs:
         tf_actions_working_dir: "./terraform"
   
   testTerraform:
-    name: terraform in production
+    name: terraform in test
     runs-on: ubuntu-latest
     if: github.event.repository.default_branch == 'test'
     env:
@@ -111,7 +111,6 @@ jobs:
         tf_actions_working_dir: "./terraform"
 
     - name: Terraform Apply
-      if: github.ref == 'refs/heads/test' || github.ref == 'refs/heads/production'
       uses: hashicorp/terraform-github-actions@master
       with:
         tf_actions_version: 1.7.5
