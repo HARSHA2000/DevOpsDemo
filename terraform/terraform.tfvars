@@ -1,2 +1,2 @@
-rgname   = "terraformdemo1"
+rgname   = "terraformdemo2"
 location = "Central India"
