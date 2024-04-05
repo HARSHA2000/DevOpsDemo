@@ -1,6 +1,6 @@
 variable "rgname" {
   description = "Resource Group Name"
-  default     = "terraformdemo3"
+  default     = "terraformdemo4"
   type        = string
 }
 
